@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    canvas {
+      border: 1px solid #d3d3d3;
+      background-color: #f1f1f1;
+    }
+    
+    #gameOverScreen {
+      border-radius: 15px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 200px;
+      background-color: rgba(255, 255, 255, 0.8);
+      text-align: center;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    #gameOverScreen h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    #restartButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body onload="startGame()">
+  <div id="gameOverScreen">
+    <h1>Game Over</h1>
+    <button id="restartButton" onclick="restartGame()">Reiniciar</button>
+  </div>
+  <script>
+
+    var myGamePiece;
+    var backgroundImg;
+
+    function startGame() {
+      myGamePiece = new component(50, 50, "img/ship1.png", 15, 150, "image");
+      myGameArea.start();
+      backgroundImg = new Image();
+      backgroundImg.onload = function () {
+        updateGameArea();
+      };
+      backgroundImg.src = 'img/ini2.jpeg';
+      window.addEventListener('resize', resizeCanvas, false);
+    }
+
+    function resizeCanvas() {
+      myGameArea.canvas.width = window.innerWidth - 5;
+      myGameArea.canvas.height = window.innerHeight - 100;
+      updateGameArea();
+    }
+
+    var myGameArea = {
+      canvas: document.createElement("canvas"),
+      start: function () {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight - 100;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.frameNo = 0;
+        this.interval = setInterval(updateGameArea, 20);
+      },
+      stop: function () {
+        clearInterval(this.interval);
+        showGameOverScreen();
+      },
+      clear: function () {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      }
+    }
+
+    function component(width, height, color, x, y, type) {
+      this.type = type;
+      this.width = width;
+      this.height = height;
+      this.speedX = 3;
+      this.x = x;
+      this.y = y;
+      this.minHeight = 250; 
+      this.amplitude = 100; 
+      this.angle = 5;
+      if (this.type == "image") {
+        this.image = new Image();
+        this.image.src = color;
+      }
+      this.update = function () {
+        ctx = myGameArea.context;
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        if (this.type == "image") {
+          ctx.drawImage(this.image, this.width / -2, this.height / -2, this.width, this.height);
+        } else {
+          ctx.fillStyle = color;
+          ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height);
+        }
+        ctx.restore();
+      };
+      this.newPos = function () {
+        this.angle += 0.05;
+        this.y = this.minHeight + Math.sin(this.angle) * this.amplitude;
+        this.x += this.speedX;
+        if (this.x >= myGameArea.canvas.width - this.width || this.x <= 0) {
+          this.speedX *= -1; 
+        }
+      };
+    }
+
+    function updateGameArea() {
+      myGameArea.clear();
+      myGameArea.context.drawImage(backgroundImg, 0, 0, myGameArea.canvas.width, myGameArea.canvas.height);
+      myGamePiece.newPos();
+      myGamePiece.update();
+    }
+
+    function showGameOverScreen() {
+      document.getElementById('gameOverScreen').style.display = 'block';
+    }
+
+    function restartGame() {
+      window.location.href = "juego.html";
+    }
+
+  </script>
+</body>
+
+</html>

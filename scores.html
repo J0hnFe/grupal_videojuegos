@@ -30,7 +30,7 @@
   <body onload="initScores()">
     <canvas id="backgroundCanvas"></canvas>
     <div class="btn-container">
-      <button onclick="window.location.href='test.html'">Jugar de Nuevo</button>
+      <button onclick="window.location.href='juego.html'">Jugar de Nuevo</button>
       <button onclick="window.location.href='creditos.html'">Créditos</button>
     </div>
 
@@ -42,8 +42,8 @@
         canvas.width = window.innerWidth - 5;
         canvas.height = window.innerHeight - 100;
         ctx = canvas.getContext("2d");
-        myBackground = new component(canvas.width, canvas.height, "astro_movie.jpg", 0, 0, "background");
-        mySound = new sound("dorado.mp3");
+        myBackground = new component(canvas.width, canvas.height, "img/astro_movie.jpg", 0, 0, "background");
+        mySound = new sound("sound/dorado.mp3");
         mySound.play();
         myBackground.image.onload = function() {
           myBackground.update();
