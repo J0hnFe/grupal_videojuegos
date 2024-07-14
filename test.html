@@ -15,7 +15,7 @@
         myBackground,
         myObstacles = [],
         myScore,
-        mySound
+        mySound;
 
       function startGame() {
         myGamePiece = new component(40, 40, "ship1.png", 10, 120, "image");
@@ -52,6 +52,8 @@
         },
         stop: function () {
           clearInterval(this.interval);
+          saveScore(this.frameNo);
+          window.location.href = "scores.html";
         },
       };
 
@@ -92,7 +94,7 @@
         this.y = y;
         this.update = function () {
           ctx = myGameArea.context;
-          
+
           if (type == "image" || type == "background") {
             if (type == "background") {
               ctx.globalAlpha = 0.5; // transparencia
@@ -239,6 +241,14 @@
         myGamePiece.speedX = 0;
         myGamePiece.speedY = 0;
       }
+
+      function saveScore(score) {
+        let scores = JSON.parse(localStorage.getItem("highScores")) || [];
+        scores.push(score);
+        scores.sort((a, b) => b - a);
+        scores = scores.slice(0, 10);
+        localStorage.setItem("highScores", JSON.stringify(scores));
+      }
     </script>
 
     <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.1)">
@@ -275,6 +285,5 @@
         DOWN
       </button>
     </div>
-    <p>HOLA</p>
   </body>
 </html>
