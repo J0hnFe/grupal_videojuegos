@@ -1,83 +1,93 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JuegoG1</title>
     <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            font-family: Arial, sans-serif;
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+      .bg {
+        background-image: url("img/ini2.jpeg");
+        height: 100%;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+      .centrado {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+      @keyframes rainbowAnimation {
+        0% {
+          background-image: linear-gradient(to right, red, orange);
         }
-        .bg {
-            background-image: url('ini2.jpeg');
-            height: 100%;
-            background-position: center center; 
-            background-repeat: no-repeat;
-            background-size: cover; 
+        16% {
+          background-image: linear-gradient(to right, orange, yellow);
         }
-        .centrado {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
+        33% {
+          background-image: linear-gradient(to right, yellow, green);
         }
-        @keyframes rainbowAnimation {
-    0% {background-image: linear-gradient(to right, red, orange);}
-    16% {background-image: linear-gradient(to right, orange, yellow);}
-    33% {background-image: linear-gradient(to right, yellow, green);}
-    50% {background-image: linear-gradient(to right, green, blue);}
-    66% {background-image: linear-gradient(to right, blue, indigo);}
-    83% {background-image: linear-gradient(to right, indigo, violet);}
-    100% {background-image: linear-gradient(to right, violet, red);}
-}
+        50% {
+          background-image: linear-gradient(to right, green, blue);
+        }
+        66% {
+          background-image: linear-gradient(to right, blue, indigo);
+        }
+        83% {
+          background-image: linear-gradient(to right, indigo, violet);
+        }
+        100% {
+          background-image: linear-gradient(to right, violet, red);
+        }
+      }
 
-button {
-    margin: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    color: white; 
-    border: none;
-    border-radius: 5px; 
-    transition: transform 0.2s; 
-    animation: rainbowAnimation 8s infinite linear; 
-}
+      button {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        transition: transform 0.2s;
+        animation: rainbowAnimation 8s infinite linear;
+      }
 
-button:hover {
-    transform: scale(1.1); 
-}
+      button:hover {
+        transform: scale(1.1);
+      }
     </style>
-</head>
-<body>
-
-<div class="bg">
-    <div class="centrado">
-        <h1>Juego Grupo 1 </h1>
+  </head>
+  <body>
+    <div class="bg">
+      <div class="centrado">
+        <h1>Juego Grupo 1</h1>
         <button onclick="iniciarJuego()">Iniciar Juego</button>
         <button onclick="mostrarCreditos()">Créditos</button>
         <button onclick="mostrarScores()">Scores</button>
+      </div>
     </div>
-</div>
 
-<script>
-    function iniciarJuego() {
-       
-      window.location.href = "test.html";
-    }
+    <script>
+      function iniciarJuego() {
+        window.location.href = "juego.html";
+      }
 
-    function mostrarCreditos() {
-        
-        alert('Mostrando créditos...');
-    }
+      function mostrarCreditos() {
+        alert("Mostrando créditos...");
+      }
 
-    function mostrarScores() {
-      
-        alert('Mostrando scores...');
-    }
-</script>
-
-</body>
+      function mostrarScores() {
+        alert("Mostrando scores...");
+      }
+    </script>
+  </body>
 </html>
