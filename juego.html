@@ -97,6 +97,17 @@
         0,
         "background"
       );
+
+
+      // vector de colores
+      myColors = [
+        "red",
+        "blue",
+        "green",
+        "cyan",
+        "yellow"
+      ]
+
       mySound = new sound("sound/audio_final.mp3");
       myScore = new component("30px", "Consolas", "white", 280, 40, "text");
       myLives = new component("30px", "Consolas", "white", 20, 40, "text"); // Mostrar vidas
@@ -293,6 +304,9 @@
           console.log("FASEEEEEE.....");
         }
         console.log("myGamePiece.gravity: " + myGamePiece.gravity);
+
+        // myUpBtn.color = "green";
+
         return clicked;
       };
     }
@@ -329,7 +343,10 @@
       }
       myGameArea.clear();
       if (myGameArea.y) {
+
         if (myUpBtn.clicked()) {
+          
+          myUpBtn = new botonDisplay(40, 40, getRandomColor(), 500, 290);
           myGamePiece.gravity = -0.2;
           myGamePiece.image.src = "img/ship1.png";
           console.log(
@@ -337,6 +354,7 @@
             myGamePiece.y
           );
         } else {
+          myUpBtn = new botonDisplay(40, 40, "red", 500, 290);
           console.log(
             "******************Se está ejecutando el boton en pantalla: "
           );
@@ -360,9 +378,9 @@
         minGap = 50;
         maxGap = 200;
         gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-        myObstacles.push(new component(20, height, "blue", x, 0));
+        myObstacles.push(new component(20, height, getRandomColor(), x, 0));
         myObstacles.push(
-          new component(20, x - height - gap, "blue", x, height + gap)
+          new component(20, x - height - gap, getRandomColor(), x, height + gap)
         );
       }
       for (i = 0; i < myObstacles.length; i += 1) {
@@ -377,6 +395,11 @@
       myGamePiece.newPos();
       myGamePiece.update();
       myUpBtn.update();
+    }
+
+    function getRandomColor() {
+      var randomIndex = Math.floor(Math.random() * myColors.length);
+      return myColors[randomIndex];
     }
 
     function everyinterval(n) {
