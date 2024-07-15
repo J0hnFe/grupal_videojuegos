@@ -8,7 +8,14 @@
       border: 1px solid #d3d3d3;
       background-color: #f1f1f1;
     }
-    
+
+    button {
+      border-radius: 5px;
+      margin-top: 5px;
+      height: 40px;
+      width: 100px;
+    }
+
     #gameOverScreen {
       border-radius: 15px;
       position: absolute;
@@ -28,8 +35,16 @@
       margin-bottom: 20px;
     }
 
-    #restartButton {
+    /* #restartButton {
       padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    } */
+
+    .opciones_gameover {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       font-size: 16px;
       cursor: pointer;
     }
@@ -39,8 +54,13 @@
 <body onload="startGame()">
   <div id="gameOverScreen">
     <h1>Game Over</h1>
-    <button id="restartButton" onclick="restartGame()">Reiniciar</button>
+    <div class="opciones_gameover">
+      <button id="restartButton" onclick="restartGame()">Reiniciar</button>
+      <button id="game_over" onclick="window.location.href='scores.html'">Scores</button>
+      <button id="inicio" onclick="window.location.href='inicio.html'">Inicio</button>
+    </div>
   </div>
+
   <script>
 
     var myGamePiece;
@@ -89,8 +109,8 @@
       this.speedX = 3;
       this.x = x;
       this.y = y;
-      this.minHeight = 250; 
-      this.amplitude = 100; 
+      this.minHeight = 250;
+      this.amplitude = 100;
       this.angle = 5;
       if (this.type == "image") {
         this.image = new Image();
@@ -113,7 +133,7 @@
         this.y = this.minHeight + Math.sin(this.angle) * this.amplitude;
         this.x += this.speedX;
         if (this.x >= myGameArea.canvas.width - this.width || this.x <= 0) {
-          this.speedX *= -1; 
+          this.speedX *= -1;
         }
       };
     }
@@ -132,7 +152,6 @@
     function restartGame() {
       window.location.href = "juego.html";
     }
-
   </script>
 </body>
 
