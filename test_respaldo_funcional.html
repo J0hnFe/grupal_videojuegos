@@ -62,6 +62,7 @@
       }
     </style>
   </head>
+
   <body onload="startGame()">
     <div id="pause-menu" class="pause-menu">
       <h2>PAUSA</h2>
@@ -85,10 +86,7 @@
         myObstacles = [],
         myScore,
         mySound,
-        isPaused = false,
-        lives = 3, // Contador de vidas
-        invulnerable = false; // Estado de invulnerabilidad
-
+        isPaused = false;
       /*Inicio botones en canvas*/
       var myUpBtn;
       var myDownBtn;
@@ -108,7 +106,6 @@
         );
         mySound = new sound("dorado.mp3");
         myScore = new component("30px", "Consolas", "white", 280, 40, "text");
-        myLives = new component("30px", "Consolas", "white", 20, 40, "text"); // Mostrar vidas
         mySound.play();
         /*Inicio botones en canvas*/
         myUpBtn = new botonDisplay(40, 40, "cyan", 430, 220);
@@ -315,36 +312,19 @@
 
       function updateGameArea() {
         if (isPaused) return;
-
-        var x, y, minHeight, maxHeight, minGap, maxGap, height, gap;
-
+        var x, height, gap, minHeight, maxHeight, minGap, maxGap;
         for (i = 0; i < myObstacles.length; i += 1) {
           if (myGamePiece.crashWith(myObstacles[i])) {
-            if (invulnerable) {
-              // Si es invulnerable, el obstáculo desaparece temporalmente
-              myObstacles[i].x = myGameArea.canvas.width + 100; // Mover fuera del área visible
-              setTimeout(
-                function (obstacle) {
-                  obstacle.x = Math.random() * myGameArea.canvas.width; // Reaparecer en una posición aleatoria
-                },
-                2000,
-                myObstacles[i]
-              );
-            } else {
-              lives--; // Reducir vida
-              if (lives <= 0) {
-                myGameArea.stop();
-                return;
-              } else {
-                invulnerable = true;
-                setTimeout(function () {
-                  invulnerable = false; // Desactivar invulnerabilidad después de 3 segundos
-                }, 3000);
-              }
-            }
+            mySound.stop();
+            myGameArea.stop();
+            return;
           }
         }
+
         myGameArea.clear();
+        /*Inicio Botones en canvas*/
+        console.log("myGameArea.y: " + myGameArea.y);
+
         if (myGameArea.y) {
           if (myUpBtn.clicked()) {
             /* accelerate(-0.2); */
@@ -386,13 +366,9 @@
         /* myGamePiece.update(); */
         /*Fin Botones en canvas*/
 
-        
-        myBackground.newPos();
-        myBackground.update();
         myGameArea.frameNo += 1;
         if (myGameArea.frameNo == 1 || everyinterval(150)) {
           x = myGameArea.canvas.width;
-          y = myGameArea.canvas.height - 200;
           minHeight = 20;
           maxHeight = 200;
           height = Math.floor(
@@ -401,23 +377,23 @@
           minGap = 50;
           maxGap = 200;
           gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-          myObstacles.push(new component(20, height, "blue", x, 0));
+          myObstacles.push(new component(10, height, "black", x, 0));
           myObstacles.push(
-            new component(20, x - height - gap, "blue", x, height + gap)
+            new component(10, x - height - gap, "black", x, height + gap)
           );
         }
         for (i = 0; i < myObstacles.length; i += 1) {
-          myObstacles[i].x += -1;
+          myObstacles[i].speedX = -1;
+          myObstacles[i].newPosObs();
           myObstacles[i].update();
         }
-
+        myBackground.speedX = -1;
+        myBackground.newPos();
+        myBackground.update();
         myScore.text = "SCORE: " + myGameArea.frameNo;
         myScore.update();
-        myLives.text = "LIVES: " + lives;
-        myLives.update(); // Actualizar visualización de vidas
         myGamePiece.newPos();
         myGamePiece.update();
-        myUpBtn.update();
       }
 
       function everyinterval(n) {
@@ -428,50 +404,62 @@
       }
 
       function moveup() {
+        myGamePiece.image.src = "ship1.png";
         myGamePiece.speedY = -1;
       }
-
       function movedown() {
+        myGamePiece.image.src = "ship1.png";
         myGamePiece.speedY = 1;
       }
-
       function moveleft() {
+        myGamePiece.image.src = "ship1.png";
         myGamePiece.speedX = -1;
       }
-
       function moveright() {
+        myGamePiece.image.src = "ship1.png";
         myGamePiece.speedX = 1;
       }
-
       function clearmove() {
+        myGamePiece.image.src = "ship2.png";
         myGamePiece.speedX = 0;
         myGamePiece.speedY = 0;
       }
 
-      /*Funcion para guardar score*/
-      function saveScore(score) {
-        localStorage.setItem("score", score);
-      }
-
       function togglePause() {
-        isPaused = !isPaused;
-        document.getElementById("pause-menu").style.display = isPaused
-          ? "block"
-          : "none";
+        if (isPaused) {
+          isPaused = false;
+          mySound.play();
+          document.getElementById("pause-menu").style.display = "none";
+          myGameArea.interval = setInterval(updateGameArea, 20);
+        } else {
+          isPaused = true;
+          mySound.play();
+          document.getElementById("pause-menu").style.display = "block";
+          clearInterval(myGameArea.interval);
+        }
       }
 
       function restartGame() {
-        document.location.reload();
+        location.reload();
       }
 
       function updateVolume(value) {
         mySound.sound.volume = value;
       }
 
+      function saveScore(score) {
+        let scores = JSON.parse(localStorage.getItem("highScores")) || [];
+        scores.push(score);
+        scores.sort((a, b) => b - a);
+        scores = scores.slice(0, 10);
+        localStorage.setItem("highScores", JSON.stringify(scores));
+      }
+
       function accelerate(gContra) {
         myGamePiece.gravity = gContra;
       }
     </script>
+
     <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.1)">
       ACCELERATE
     </button>
