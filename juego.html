@@ -1,377 +1,501 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-      canvas {
-        border: 1px solid #d3d3d3;
-        background-color: #f1f1f1;
-      }
 
-      .pause-menu {
-        display: none;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        background: rgba(0, 0, 0, 0.7);
-        color: rgb(255, 255, 255);
-        padding: 30px;
-        border-radius: 15px;
-        z-index: 1000;
-        box-shadow: 0 4px 8px rgba(68, 159, 238, 0.811);
-        font-family: "Arial", sans-serif;
-      }
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+    }
 
-      .pause-menu h2 {
-        font-size: 32px;
-        margin-bottom: 20px;
-      }
+    canvas {
+      border: 1px solid #d3d3d3;
+      background-color: #f1f1f1;
+    }
 
-      .pause-menu button {
-        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
-          sans-serif;
-        display: block;
-        margin: 10px auto;
-        padding: 10px 20px;
-        font-size: 18px;
-        background-color: #1e7ddc;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
+    .pause-menu {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      background: rgba(0, 0, 0, 0.7);
+      color: rgb(255, 255, 255);
+      padding: 30px;
+      border-radius: 15px;
+      z-index: 1000;
+      box-shadow: 0 4px 8px rgba(68, 159, 238, 0.811);
+      font-family: "Arial", sans-serif;
+    }
 
-      .pause-menu button:hover {
-        background-color: #ffffff;
-        color: black;
-      }
+    .pause-menu h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
 
-      .pause-menu label {
-        display: block;
-        margin: 20px 0;
-        font-size: 18px;
-      }
+    .pause-menu button {
+      font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+        sans-serif;
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #1e7ddc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-      .pause-menu input[type="range"] {
-        width: 80%;
-      }
-    </style>
-  </head>
+    .pause-menu button:hover {
+      background-color: #ffffff;
+      color: black;
+    }
 
-  <body onload="startGame()">
-    <div id="pause-menu" class="pause-menu">
-      <h2>PAUSA</h2>
-      <button onclick="restartGame()">Reiniciar</button>
-      <button onclick="togglePause()">Reanudar</button>
-      <label
-        >Volumen
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.1"
-          onchange="updateVolume(this.value)"
-        />
-      </label>
-      <button onclick="alert('Scores coming soon!')">Scores</button>
-    </div>
-    <script>
-      var myGamePiece,
-        myBackground,
-        myObstacles = [],
-        myScore,
-        mySound,
-        isPaused = false;
+    .pause-menu label {
+      display: block;
+      margin: 20px 0;
+      font-size: 18px;
+    }
 
-      function startGame() {
-        myGamePiece = new component(40, 40, "img/ship1.png", 10, 120, "image");
-        myBackground = new component(
-          656,
-          270,
-          "img/astro_movie.jpg",
-          0,
-          0,
-          "background"
-        );
-        mySound = new sound("sound/dorado.mp3");
-        myScore = new component("30px", "Consolas", "white", 280, 40, "text");
-        mySound.play();
-        myGameArea.start();
-        document.addEventListener("keydown", function (event) {
-          if (event.key === "Enter") {
-            togglePause();
-          }
+    .pause-menu input[type="range"] {
+      width: 80%;
+    }
+  </style>
+</head>
+
+<body onload="startGame()">
+  <div id="pause-menu" class="pause-menu">
+    <h2>PAUSA</h2>
+    <button onclick="restartGame()">Reiniciar</button>
+    <button onclick="togglePause()">Reanudar</button>
+    <label>Volumen
+      <input type="range" min="0" max="1" step="0.1" onchange="updateVolume(this.value)" />
+    </label>
+    <button onclick="alert('Scores coming soon!')">Scores</button>
+  </div>
+  <script>
+    var myGamePiece,
+      myBackground,
+      myObstacles = [],
+      myScore,
+      mySound,
+      isPaused = false,
+      lives = 3, // Contador de vidas
+      invulnerable = false; // Estado de invulnerabilidad
+
+    /*Inicio botones en canvas*/
+    var myUpBtn;
+    var myDownBtn;
+    var myLeftBtn;
+    var myRightBtn;
+    /*Fin botones en canvas*/
+
+    function startGame() {
+      myGamePiece = new component(40, 40, "img/ship1.png", 10, 120, "image");
+      myBackground = new component(
+        window.innerWidth,
+        window.innerHeight - 100,
+        "img/astro_movie.jpg",
+        0,
+        0,
+        "background"
+      );
+      mySound = new sound("sound/dorado.mp3");
+      myScore = new component("30px", "Consolas", "white", 280, 40, "text");
+      myLives = new component("30px", "Consolas", "white", 20, 40, "text"); // Mostrar vidas
+      mySound.play();
+      /*Inicio botones en canvas*/
+      myUpBtn = new botonDisplay(40, 40, "cyan", 430, 220);
+      myDownBtn = new botonDisplay(0, 0, "blue", 50, 70);
+      myLeftBtn = new botonDisplay(0, 0, "blue", 20, 40);
+      myRightBtn = new botonDisplay(0, 0, "blue", 80, 40);
+      /*Fin botones en canvas*/
+      myGameArea.start();
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          togglePause();
+        }
+      });
+    }
+
+    var myGameArea = {
+      canvas: document.createElement("canvas"),
+      start: function () {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight - 100;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.frameNo = 0;
+        this.interval = setInterval(updateGameArea, 20);
+
+        /*Inicio Botones en canvas*/
+        window.addEventListener("mousedown", function (e) {
+          myGameArea.x = e.pageX;
+          myGameArea.y = e.pageY;
         });
-      }
+        window.addEventListener("mouseup", function (e) {
+          myGameArea.x = false;
+          myGameArea.y = false;
+        });
+        window.addEventListener("touchstart", function (e) {
+          myGameArea.x = e.pageX;
+          myGameArea.y = e.pageY;
+        });
+        window.addEventListener("touchend", function (e) {
+          myGameArea.x = false;
+          myGameArea.y = false;
+        });
+        /*Fin Botones en canvas*/
+      },
+      clear: function () {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      },
+      stop: function () {
+        clearInterval(this.interval);
+        saveScore(this.frameNo);
+        window.location.href = "scores.html";
+      },
+    };
 
-      var myGameArea = {
-        canvas: document.createElement("canvas"),
-        start: function () {
-          this.canvas.width = 480;
-          this.canvas.height = 270;
-          this.context = this.canvas.getContext("2d");
-          document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-          this.frameNo = 0;
-          this.interval = setInterval(updateGameArea, 20);
-        },
-        clear: function () {
-          this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        },
-        stop: function () {
-          clearInterval(this.interval);
-          saveScore(this.frameNo);
-          window.location.href = "scores.html";
-        },
+    function sound(src) {
+      this.sound = document.createElement("audio");
+      this.sound.src = src;
+      this.sound.setAttribute("preload", "auto");
+      this.sound.setAttribute("controls", "none");
+      this.sound.style.display = "none";
+      document.body.appendChild(this.sound);
+      this.play = function () {
+        this.sound.play();
+      };
+      this.stop = function () {
+        this.sound.pause();
+      };
+    }
+
+    function component(width, height, color, x, y, type) {
+      this.type = type;
+      if (type == "image" || type == "background") {
+        this.image = new Image();
+        this.image.src = color;
+      }
+      this.width = width;
+      this.height = height;
+      this.speedX = 0;
+      this.speedY = 0;
+      this.gravity = 0.05;
+      this.gravitySpeed = 0;
+      this.bounce = 0.6;
+      this.angle = 0;
+      this.x = x;
+      this.y = y;
+      this.update = function () {
+        ctx = myGameArea.context;
+        if (type == "image" || type == "background") {
+          if (type == "background") {
+            ctx.globalAlpha = 0.5; // transparencia
+          }
+          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+          if (type == "background") {
+            ctx.drawImage(
+              this.image,
+              this.x + this.width,
+              this.y,
+              this.width,
+              this.height
+            );
+            ctx.globalAlpha = 1;
+          }
+        } else if (this.type == "text") {
+          ctx.font = this.width + " " + this.height;
+          ctx.fillStyle = color;
+          ctx.fillText(this.text, this.x, this.y);
+        } else {
+          ctx.fillStyle = color;
+          ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
       };
 
-      function sound(src) {
-        this.sound = document.createElement("audio");
-        this.sound.src = src;
-        this.sound.setAttribute("preload", "auto");
-        this.sound.setAttribute("controls", "none");
-        this.sound.style.display = "none";
-        document.body.appendChild(this.sound);
-        this.play = function () {
-          this.sound.play();
-        };
-        this.stop = function () {
-          this.sound.pause();
-        };
-      }
-
-      function component(width, height, color, x, y, type) {
-        this.type = type;
-        if (type == "image" || type == "background") {
-          this.image = new Image();
-          this.image.src = color;
-        }
-        this.width = width;
-        this.height = height;
-        this.speedX = 0;
-        this.speedY = 0;
-        this.gravity = 0.05;
-        this.gravitySpeed = 0;
-        this.bounce = 0.6;
-        this.angle = 0;
-        this.x = x;
-        this.y = y;
-        this.update = function () {
-          ctx = myGameArea.context;
-          if (type == "image" || type == "background") {
-            if (type == "background") {
-              ctx.globalAlpha = 0.5; // transparencia
-            }
-            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-            if (type == "background") {
-              ctx.drawImage(
-                this.image,
-                this.x + this.width,
-                this.y,
-                this.width,
-                this.height
-              );
-              ctx.globalAlpha = 1;
-            }
-          } else if (this.type == "text") {
-            ctx.font = this.width + " " + this.height;
-            ctx.fillStyle = color;
-            ctx.fillText(this.text, this.x, this.y);
-          } else {
-            ctx.fillStyle = color;
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-          }
-        };
-
-        this.newPos = function () {
-          this.gravitySpeed += this.gravity;
-          this.x += this.speedX;
-          this.y += this.speedY + this.gravitySpeed;
-          this.hitBottom();
-          if (this.type == "background") {
-            if (this.x == -this.width) {
-              this.x = 0;
-            }
-          }
-        };
-
-        this.newPosObs = function () {
-          this.x += this.speedX;
-          this.y += this.speedY;
-          if (this.type == "background") {
-            if (this.x == -this.width) {
-              this.x = 0;
-            }
-          }
-        };
-
-        this.hitBottom = function () {
-          var rockbottom = myGameArea.canvas.height - this.height;
-          if (this.y > rockbottom) {
-            this.y = rockbottom;
-            this.gravitySpeed = -(this.gravitySpeed * this.bounce);
-          }
-        };
-
-        this.crashWith = function (otherobj) {
-          var myleft = this.x;
-          var myright = this.x + this.width;
-          var mytop = this.y;
-          var mybottom = this.y + this.height;
-          var otherleft = otherobj.x;
-          var otherright = otherobj.x + otherobj.width;
-          var othertop = otherobj.y;
-          var otherbottom = otherobj.y + otherobj.height;
-          var crash = true;
-          if (
-            mybottom < othertop ||
-            mytop > otherbottom ||
-            myright < otherleft ||
-            myleft > otherright
-          ) {
-            crash = false;
-          }
-          return crash;
-        };
-      }
-
-      function updateGameArea() {
-        if (isPaused) return;
-        var x, height, gap, minHeight, maxHeight, minGap, maxGap;
-        for (i = 0; i < myObstacles.length; i += 1) {
-          if (myGamePiece.crashWith(myObstacles[i])) {
-            mySound.stop();
-            myGameArea.stop();
-            return;
+      this.newPos = function () {
+        this.gravitySpeed += this.gravity;
+        this.x += this.speedX;
+        this.y += this.speedY + this.gravitySpeed;
+        this.hitBottom();
+        if (this.type == "background") {
+          if (this.x == -this.width) {
+            this.x = 0;
           }
         }
 
-        myGameArea.clear();
-        myGameArea.frameNo += 1;
-        if (myGameArea.frameNo == 1 || everyinterval(150)) {
-          x = myGameArea.canvas.width;
-          minHeight = 20;
-          maxHeight = 200;
-          height = Math.floor(
-            Math.random() * (maxHeight - minHeight + 1) + minHeight
-          );
-          minGap = 50;
-          maxGap = 200;
-          gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-          myObstacles.push(new component(10, height, "black", x, 0));
-          myObstacles.push(
-            new component(10, x - height - gap, "black", x, height + gap)
-          );
-        }
-        for (i = 0; i < myObstacles.length; i += 1) {
-          myObstacles[i].speedX = -1;
-          myObstacles[i].newPosObs();
-          myObstacles[i].update();
-        }
-        myBackground.speedX = -1;
-        myBackground.newPos();
-        myBackground.update();
-        myScore.text = "SCORE: " + myGameArea.frameNo;
-        myScore.update();
-        myGamePiece.newPos();
-        myGamePiece.update();
-      }
-
-      function everyinterval(n) {
-        if ((myGameArea.frameNo / n) % 1 == 0) {
-          return true;
-        }
-        return false;
-      }
-
-      function moveup() {
-        myGamePiece.image.src = "img/ship1.png";
-        myGamePiece.speedY = -1;
-      }
-      function movedown() {
-        myGamePiece.image.src = "img/ship1.png";
-        myGamePiece.speedY = 1;
-      }
-      function moveleft() {
-        myGamePiece.image.src = "img/ship1.png";
-        myGamePiece.speedX = -1;
-      }
-      function moveright() {
-        myGamePiece.image.src = "img/ship1.png";
-        myGamePiece.speedX = 1;
-      }
-      function clearmove() {
-        myGamePiece.image.src = "img/ship2.png";
-        myGamePiece.speedX = 0;
-        myGamePiece.speedY = 0;
-      }
-
-      function togglePause() {
-        if (isPaused) {
-          isPaused = false;
-          mySound.play();
-          document.getElementById("pause-menu").style.display = "none";
-          myGameArea.interval = setInterval(updateGameArea, 20);
+        if (this.y < 0) {
+          this.y = 0;
+          this.speedY = 0;
+          this.gravitySpeed = 0;
         } else {
-          isPaused = true;
-          mySound.play();
-          document.getElementById("pause-menu").style.display = "block";
-          clearInterval(myGameArea.interval);
+          /* this.hitBottom(); */
+        }
+      };
+
+      this.newPosObs = function () {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.type == "background") {
+          if (this.x == -this.width) {
+            this.x = 0;
+          }
+        }
+      };
+
+      this.hitBottom = function () {
+        var rockbottom = myGameArea.canvas.height - this.height;
+        if (this.y > rockbottom) {
+          this.y = rockbottom;
+          this.gravitySpeed = -(this.gravitySpeed * this.bounce);
+        }
+      };
+
+      this.crashWith = function (otherobj) {
+        var myleft = this.x;
+        var myright = this.x + this.width;
+        var mytop = this.y;
+        var mybottom = this.y + this.height;
+        var otherleft = otherobj.x;
+        var otherright = otherobj.x + otherobj.width;
+        var othertop = otherobj.y;
+        var otherbottom = otherobj.y + otherobj.height;
+        var crash = true;
+        if (
+          mybottom < othertop ||
+          mytop > otherbottom ||
+          myright < otherleft ||
+          myleft > otherright
+        ) {
+          crash = false;
+        }
+        return crash;
+      };
+    }
+
+    function botonDisplay(width, height, color, x, y) {
+      this.width = width;
+      this.height = height;
+      this.speedX = 0;
+      this.speedY = 0;
+      this.x = x;
+      this.y = y;
+      this.gravity = myGamePiece.gravity;
+      this.update = function () {
+        ctx = myGameArea.context;
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+      };
+      this.clicked = function () {
+        var myleft = this.x;
+        var myright = this.x + this.width;
+        var mytop = this.y;
+        var mybottom = this.y + this.height;
+        var clicked = true;
+        if (mybottom < myGameArea.y || mytop > myGameArea.y) {
+          /* myGamePiece.gravity = myGamePiece.gravity + 0.001; */
+          /* myGamePiece.gravitySpeed = 0; */
+
+          clicked = false;
+
+          console.log("FASEEEEEE.....");
+        }
+        console.log("myGamePiece.gravity: " + myGamePiece.gravity);
+        return clicked;
+      };
+    }
+
+    function updateGameArea() {
+      if (isPaused) return;
+
+      var x, y, minHeight, maxHeight, minGap, maxGap, height, gap;
+
+      for (i = 0; i < myObstacles.length; i += 1) {
+        if (myGamePiece.crashWith(myObstacles[i])) {
+          if (invulnerable) {
+            // Si es invulnerable, el obstáculo desaparece temporalmente
+            myObstacles[i].x = myGameArea.canvas.width + 100; // Mover fuera del área visible
+            setTimeout(
+              function (obstacle) {
+                obstacle.x = -Math.random() * myGameArea.canvas.width; // Reaparecer en una posición aleatoria
+              },
+              2000,
+              myObstacles[i]
+            );
+          } else {
+            lives--; // Reducir vida
+            if (lives <= 0) {
+              myGameArea.stop();
+              return;
+            } else {
+              invulnerable = true;
+              setTimeout(function () {
+                invulnerable = false; // Desactivar invulnerabilidad después de 3 segundos
+              }, 1000);
+            }
+          }
         }
       }
+      myGameArea.clear();
+      if (myGameArea.y) {
+        if (myUpBtn.clicked()) {
+          /* accelerate(-0.2); */
+          /* myGamePiece.y -= 1; */
 
-      function restartGame() {
-        location.reload();
+          /* myGamePiece.gravity = myGamePiece.gravity + 0.001; */
+          /* myGamePiece.gravitySpeed = 0; */
+          myGamePiece.gravity = -0.2;
+          console.log(
+            "----------------Se está ejecutando el boton en pantalla: " +
+            myGamePiece.y
+          );
+        } else {
+          console.log(
+            "******************Se está ejecutando el boton en pantalla: "
+          );
+
+          /* myGamePiece.gravitySpeed = 0; */
+        }
+
+        if (myDownBtn.clicked()) {
+          myGamePiece.y += 1;
+        }
+        if (myLeftBtn.clicked()) {
+          myGamePiece.x += -1;
+        }
+        if (myRightBtn.clicked()) {
+          myGamePiece.x += 1;
+        }
+      } else {
+        /* myGamePiece.gravity = 0.05; */
+        myGamePiece.gravity = 0.05;
+        clearmove();
+      }
+      myUpBtn.update();
+      myDownBtn.update();
+      myLeftBtn.update();
+      myRightBtn.update();
+      /* myGamePiece.update(); */
+      /*Fin Botones en canvas*/
+
+      myBackground.newPos();
+      myBackground.update();
+      myGameArea.frameNo += 1;
+      if (myGameArea.frameNo == 1 || everyinterval(150)) {
+        x = myGameArea.canvas.width;
+        y = myGameArea.canvas.height - 200;
+        minHeight = 20;
+        maxHeight = 200;
+        height = Math.floor(
+          Math.random() * (maxHeight - minHeight + 1) + minHeight
+        );
+        minGap = 50;
+        maxGap = 200;
+        gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
+        myObstacles.push(new component(20, height, "blue", x, 0));
+        myObstacles.push(
+          new component(20, x - height - gap, "blue", x, height + gap)
+        );
+      }
+      for (i = 0; i < myObstacles.length; i += 1) {
+        myObstacles[i].x += -1;
+        myObstacles[i].update();
       }
 
-      function updateVolume(value) {
-        mySound.sound.volume = value;
-      }
+      myScore.text = "SCORE: " + myGameArea.frameNo;
+      myScore.update();
+      myLives.text = "LIVES: " + lives;
+      myLives.update(); // Actualizar visualización de vidas
+      myGamePiece.newPos();
+      myGamePiece.update();
+      myUpBtn.update();
+    }
 
-      function saveScore(score) {
-        let scores = JSON.parse(localStorage.getItem("highScores")) || [];
-        scores.push(score);
-        scores.sort((a, b) => b - a);
-        scores = scores.slice(0, 10);
-        localStorage.setItem("highScores", JSON.stringify(scores));
+    function everyinterval(n) {
+      if ((myGameArea.frameNo / n) % 1 == 0) {
+        return true;
       }
-    </script>
+      return false;
+    }
 
-    <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.1)">
-      ACCELERATE
+    /*Funcion para guardar score*/
+    function saveScore(score) {
+      let scores = JSON.parse(localStorage.getItem("highScores")) || [];
+      scores.push(score);
+      scores.sort((a, b) => b - a);
+      scores = scores.slice(0, 10);
+      localStorage.setItem("highScores", JSON.stringify(scores));
+    }
+
+    function moveup() {
+      myGamePiece.image.src = "img/ship1.png";
+      myGamePiece.speedY = -1;
+    }
+    function movedown() {
+      myGamePiece.image.src = "img/ship1.png";
+      myGamePiece.speedY = 1;
+    }
+    function moveleft() {
+      myGamePiece.image.src = "img/ship1.png";
+      myGamePiece.speedX = -1;
+    }
+    function moveright() {
+      myGamePiece.image.src = "img/ship1.png";
+      myGamePiece.speedX = 1;
+    }
+    function clearmove() {
+      myGamePiece.image.src = "img/ship2.png";
+      myGamePiece.speedX = 0;
+      myGamePiece.speedY = 0;
+    }
+
+    function togglePause() {
+      if (isPaused) {
+        isPaused = false;
+        mySound.play();
+        document.getElementById("pause-menu").style.display = "none";
+        myGameArea.interval = setInterval(updateGameArea, 20);
+      } else {
+        isPaused = true;
+        mySound.play();
+        document.getElementById("pause-menu").style.display = "block";
+        clearInterval(myGameArea.interval);
+      }
+    }
+
+    function restartGame() {
+      document.location.reload();
+    }
+
+    function updateVolume(value) {
+      mySound.sound.volume = value;
+    }
+
+    function accelerate(gContra) {
+      myGamePiece.gravity = gContra;
+    }
+  </script>
+  <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.1)">
+    ACCELERATE
+  </button>
+
+  <div style="text-align: center; width: 480px">
+    <button onmousedown="moveup()" onmouseup="clearmove()" ontouchstart="moveup()">
+      UP</button><br /><br />
+    <button onmousedown="moveleft()" onmouseup="clearmove()" ontouchstart="moveleft()">
+      LEFT
     </button>
+    <button onmousedown="moveright()" onmouseup="clearmove()" ontouchstart="moveright()">
+      RIGHT</button><br /><br />
+    <button onmousedown="movedown()" onmouseup="clearmove()" ontouchstart="movedown()">
+      DOWN
+    </button>
+  </div>
+  <p>HOLA</p>
+</body>
 
-    <div style="text-align: center; width: 480px">
-      <button
-        onmousedown="moveup()"
-        onmouseup="clearmove()"
-        ontouchstart="moveup()"
-      >
-        UP</button
-      ><br /><br />
-      <button
-        onmousedown="moveleft()"
-        onmouseup="clearmove()"
-        ontouchstart="moveleft()"
-      >
-        LEFT
-      </button>
-      <button
-        onmousedown="moveright()"
-        onmouseup="clearmove()"
-        ontouchstart="moveright()"
-      >
-        RIGHT</button
-      ><br /><br />
-      <button
-        onmousedown="movedown()"
-        onmouseup="clearmove()"
-        ontouchstart="movedown()"
-      >
-        DOWN
-      </button>
-    </div>
-    <p>HOLA</p>
-  </body>
 </html>
