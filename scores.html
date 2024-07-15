@@ -43,7 +43,7 @@
         canvas.height = window.innerHeight - 100;
         ctx = canvas.getContext("2d");
         myBackground = new component(canvas.width, canvas.height, "img/ini2.jpeg", 0, 0, "background");
-        mySound = new sound("sound/dorado.mp3");
+        mySound = new sound("sound/audio_final.mp3");
         mySound.play();
         myBackground.image.onload = function() {
           myBackground.update();
