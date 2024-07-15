@@ -20,9 +20,16 @@
         margin-top: 20px;
       }
       .btn-container button {
-        border-radius: 5px;
-        height: 50px;
-        width: 200px;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+        sans-serif;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #1e7ddc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
       }
     </style>
   </head>
@@ -30,6 +37,7 @@
     <canvas id="backgroundCanvas"></canvas>
     <div class="btn-container">
       <button onclick="window.location.href='juego.html'">Jugar de Nuevo</button>
+      <button id="inicio" onclick="window.location.href='inicio.html'">Inicio</button>
       <button onclick="window.location.href='scores.html'" style="left: 10px;">Volver a Puntajes</button>
     </div>
     <script>
@@ -40,38 +48,81 @@
         canvas.width = window.innerWidth - 5;
         canvas.height = window.innerHeight - 100;
         ctx = canvas.getContext("2d");
-
-        var backgroundImage = new Image();
-        backgroundImage.src = "img/image.png"; 
-        backgroundImage.onload = function() {
-          var hRatio = canvas.width / backgroundImage.width;
-          var vRatio = canvas.height / backgroundImage.height;
-          var ratio = Math.min(hRatio, vRatio);
-          var centerShift_x = (canvas.width - backgroundImage.width * ratio) / 2;
-          var centerShift_y = (canvas.height - backgroundImage.height * ratio) / 2;
-          ctx.drawImage(backgroundImage, 0, 0, backgroundImage.width, backgroundImage.height,
-                        centerShift_x, centerShift_y, backgroundImage.width * ratio, backgroundImage.height * ratio);
-          displayCredits(); // Llama a displayCredits después de que la imagen se haya cargado y dibujado
-        };
-
-        mySound = new sound("sound/audio_final.mp3");
+        myBackground = new component(canvas.width, canvas.height, "img/astro_movie.jpg", 0, 0, "background");
+        mySound = new sound("sound\audio_final.mp3");
         mySound.play();
+        myBackground.image.onload = function() {
+          myBackground.update();
+          displayCredits();
+        }
       }
 
       function displayCredits() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; 
-        ctx.fillRect(canvas.width / 4, 15, canvas.width / 2, 250);
-
-        ctx.fillStyle = "white"; 
-        ctx.font = "30px Arial"; 
+        ctx.fillStyle = "black";
+        ctx.font = "20px Consolas";
         ctx.textAlign = "center";
-
-        ctx.fillText("Desarrolladores", canvas.width / 2, 60);
-        ctx.fillText("Dennisse Andrade", canvas.width / 2, 120);
-        ctx.fillText("Daniel Llumiquinga", canvas.width / 2, 150);
+        ctx.fillText("Desarrolladores", canvas.width / 2, 45);
+        ctx.fillText("Dennisse Andrade", canvas.width / 2, 100);
+        ctx.fillText("Daniel Lumiquinga", canvas.width / 2, 140);
         ctx.fillText("Anddy Quisilema", canvas.width / 2, 180);
-        ctx.fillText("John Felipe Ramos", canvas.width / 2, 210);
-        ctx.fillText("Cristina Rivera", canvas.width / 2, 240);
+        ctx.fillText("Felipe Ramos", canvas.width / 2, 220);
+        ctx.fillText("Cristina Rivera", canvas.width / 2, 260);
+
+        ctx.fillText("Con la dirección de:", canvas.width / 2, 320);
+
+        ctx.fillText("Ing. Wagner Lucero", canvas.width / 2, 360);
+
+        ctx.fillText("V 1.1", canvas.width / 2, 410);
+
+        ctx.fillText("2024", canvas.width / 2, 450);
+
+
+        ctx.fillText("Gracias por jugar!", canvas.width / 2, 490);
+      }
+
+      function sound(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.play = function () {
+          this.sound.play();
+        };
+        this.stop = function () {
+          this.sound.pause();
+        };
+      }
+
+      function component(width, height, color, x, y, type) {
+        this.type = type;
+        if (type == "image" || type == "background") {
+          this.image = new Image();
+          this.image.src = color;
+        }
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;
+        this.update = function () {
+          if (type == "image" || type == "background") {
+            if (type == "background") {
+              ctx.globalAlpha = 0.5; // transparencia
+              ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+              ctx.globalAlpha = 1;
+            } else {
+              ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+            }
+          } else if (this.type == "text") {
+            ctx.font = this.width + " " + this.height;
+            ctx.fillStyle = color;
+            ctx.fillText(this.text, this.x, this.y);
+          } else {
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+          }
+        };
       }
     </script>
   </body>
