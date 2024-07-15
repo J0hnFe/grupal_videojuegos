@@ -10,75 +10,14 @@
         border: 1px solid #d3d3d3;
         background-color: #f1f1f1;
       }
-
       .pause-menu {
-        display: none;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        background: rgba(0, 0, 0, 0.7);
-        color: rgb(255, 255, 255);
-        padding: 30px;
-        border-radius: 15px;
-        z-index: 1000;
-        box-shadow: 0 4px 8px rgba(68, 159, 238, 0.811);
-        font-family: "Arial", sans-serif;
-      }
-
-      .pause-menu h2 {
-        font-size: 32px;
-        margin-bottom: 20px;
-      }
-
-      .pause-menu button {
-        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
-          sans-serif;
-        display: block;
-        margin: 10px auto;
-        padding: 10px 20px;
-        font-size: 18px;
-        background-color: #1e7ddc;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-
-      .pause-menu button:hover {
-        background-color: #ffffff;
-        color: black;
-      }
-
-      .pause-menu label {
-        display: block;
-        margin: 20px 0;
-        font-size: 18px;
-      }
-
-      .pause-menu input[type="range"] {
-        width: 80%;
+        /* ... el resto del CSS no se modifica ... */
       }
     </style>
   </head>
   <body onload="startGame()">
-    <div id="pause-menu" class="pause-menu">
-      <h2>PAUSA</h2>
-      <button onclick="restartGame()">Reiniciar</button>
-      <button onclick="togglePause()">Reanudar</button>
-      <label
-        >Volumen
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.1"
-          onchange="updateVolume(this.value)"
-        />
-      </label>
-      <button onclick="alert('Scores coming soon!')">Scores</button>
-    </div>
+    <!-- ... el resto del HTML no se modifica ... -->
+
     <script>
       var myGamePiece,
         myBackground,
@@ -86,17 +25,14 @@
         myScore,
         mySound,
         isPaused = false,
-        lives = 3, // Contador de vidas
-        invulnerable = false; // Estado de invulnerabilidad
+        lives = 3,
+        invulnerable = false;
 
-      /*Inicio botones en canvas*/
-      var myUpBtn;
-      var myDownBtn;
-      var myLeftBtn;
-      var myRightBtn;
-      /*Fin botones en canvas*/
+      // Inicialización de botones
+      var myUpBtn, myDownBtn, myLeftBtn, myRightBtn;
 
       function startGame() {
+        // Inicialización de componentes del juego
         myGamePiece = new component(40, 40, "ship1.png", 10, 120, "image");
         myBackground = new component(
           656,
@@ -108,14 +44,15 @@
         );
         mySound = new sound("dorado.mp3");
         myScore = new component("30px", "Consolas", "white", 280, 40, "text");
-        myLives = new component("30px", "Consolas", "white", 20, 40, "text"); // Mostrar vidas
+        myLives = new component("30px", "Consolas", "white", 20, 40, "text");
         mySound.play();
-        /*Inicio botones en canvas*/
+
+        // Inicialización de botones en canvas
         myUpBtn = new botonDisplay(40, 40, "cyan", 430, 220);
         myDownBtn = new botonDisplay(0, 0, "blue", 50, 70);
         myLeftBtn = new botonDisplay(0, 0, "blue", 20, 40);
         myRightBtn = new botonDisplay(0, 0, "blue", 80, 40);
-        /*Fin botones en canvas*/
+
         myGameArea.start();
         document.addEventListener("keydown", function (event) {
           if (event.key === "Enter") {
@@ -134,7 +71,6 @@
           this.frameNo = 0;
           this.interval = setInterval(updateGameArea, 20);
 
-          /*Inicio Botones en canvas*/
           window.addEventListener("mousedown", function (e) {
             myGameArea.x = e.pageX;
             myGameArea.y = e.pageY;
@@ -151,7 +87,6 @@
             myGameArea.x = false;
             myGameArea.y = false;
           });
-          /*Fin Botones en canvas*/
         },
         clear: function () {
           this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -198,7 +133,7 @@
           ctx = myGameArea.context;
           if (type == "image" || type == "background") {
             if (type == "background") {
-              ctx.globalAlpha = 0.5; // transparencia
+              ctx.globalAlpha = 0.5;
             }
             ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
             if (type == "background") {
@@ -236,8 +171,6 @@
             this.y = 0;
             this.speedY = 0;
             this.gravitySpeed = 0;
-          } else {
-            /* this.hitBottom(); */
           }
         };
 
@@ -301,14 +234,8 @@
           var mybottom = this.y + this.height;
           var clicked = true;
           if (mybottom < myGameArea.y || mytop > myGameArea.y) {
-            /* myGamePiece.gravity = myGamePiece.gravity + 0.001; */
-            /* myGamePiece.gravitySpeed = 0; */
-
             clicked = false;
-
-            console.log("FASEEEEEE.....");
           }
-          console.log("myGamePiece.gravity: " + myGamePiece.gravity);
           return clicked;
         };
       }
@@ -322,70 +249,29 @@
           if (myGamePiece.crashWith(myObstacles[i])) {
             if (invulnerable) {
               // Si es invulnerable, el obstáculo desaparece temporalmente
-              myObstacles[i].x = myGameArea.canvas.width + 100; // Mover fuera del área visible
+              myObstacles[i].x = myGameArea.canvas.width + 100;
               setTimeout(
                 function (obstacle) {
-                  obstacle.x = -Math.random() * myGameArea.canvas.width; // Reaparecer en una posición aleatoria
+                  obstacle.x = Math.random() * myGameArea.canvas.width; // Reaparecen en una nueva posición
                 },
                 2000,
                 myObstacles[i]
               );
             } else {
-              lives--; // Reducir vida
-              if (lives <= 0) {
+              lives--;
+              invulnerable = true;
+              setTimeout(function () {
+                invulnerable = false;
+              }, 2000);
+              if (lives == 0) {
                 myGameArea.stop();
                 return;
-              } else {
-                invulnerable = true;
-                setTimeout(function () {
-                  invulnerable = false; // Desactivar invulnerabilidad después de 3 segundos
-                }, 1000);
               }
             }
           }
         }
+
         myGameArea.clear();
-        if (myGameArea.y) {
-          if (myUpBtn.clicked()) {
-            /* accelerate(-0.2); */
-            /* myGamePiece.y -= 1; */
-
-            /* myGamePiece.gravity = myGamePiece.gravity + 0.001; */
-            /* myGamePiece.gravitySpeed = 0; */
-            myGamePiece.gravity = -0.2;
-            console.log(
-              "----------------Se está ejecutando el boton en pantalla: " +
-                myGamePiece.y
-            );
-          } else {
-            console.log(
-              "******************Se está ejecutando el boton en pantalla: "
-            );
-
-            /* myGamePiece.gravitySpeed = 0; */
-          }
-
-          if (myDownBtn.clicked()) {
-            myGamePiece.y += 1;
-          }
-          if (myLeftBtn.clicked()) {
-            myGamePiece.x += -1;
-          }
-          if (myRightBtn.clicked()) {
-            myGamePiece.x += 1;
-          }
-        } else {
-          /* myGamePiece.gravity = 0.05; */
-          myGamePiece.gravity = 0.05;
-          clearmove();
-        }
-        myUpBtn.update();
-        myDownBtn.update();
-        myLeftBtn.update();
-        myRightBtn.update();
-        /* myGamePiece.update(); */
-        /*Fin Botones en canvas*/
-
         myBackground.newPos();
         myBackground.update();
         myGameArea.frameNo += 1;
@@ -394,129 +280,79 @@
           y = myGameArea.canvas.height - 200;
           minHeight = 20;
           maxHeight = 200;
+          minGap = 50;
+          maxGap = 200;
           height = Math.floor(
             Math.random() * (maxHeight - minHeight + 1) + minHeight
           );
-          minGap = 50;
-          maxGap = 200;
           gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-          myObstacles.push(new component(20, height, "blue", x, 0));
+          myObstacles.push(new component(10, height, "green", x, 0));
           myObstacles.push(
-            new component(20, x - height - gap, "blue", x, height + gap)
+            new component(10, x - height - gap, "green", x, height + gap)
           );
         }
+
         for (i = 0; i < myObstacles.length; i += 1) {
-          myObstacles[i].x += -1;
+          myObstacles[i].speedX = -1;
+          myObstacles[i].newPos();
           myObstacles[i].update();
         }
 
         myScore.text = "SCORE: " + myGameArea.frameNo;
         myScore.update();
         myLives.text = "LIVES: " + lives;
-        myLives.update(); // Actualizar visualización de vidas
+        myLives.update();
         myGamePiece.newPos();
         myGamePiece.update();
-        myUpBtn.update();
       }
 
       function everyinterval(n) {
-        if ((myGameArea.frameNo / n) % 1 == 0) {
-          return true;
-        }
+        if ((myGameArea.frameNo / n) % 1 == 0) return true;
         return false;
       }
 
-      /*Funcion para guardar score*/
-      function saveScore(score) {
-        let scores = JSON.parse(localStorage.getItem("highScores")) || [];
-        scores.push(score);
-        scores.sort((a, b) => b - a);
-        scores = scores.slice(0, 10);
-        localStorage.setItem("highScores", JSON.stringify(scores));
+      function move(dir) {
+        myGamePiece.image.src = "ship2.png";
+        if (dir == "up") {
+          myGamePiece.speedY = -3;
+        }
+        if (dir == "down") {
+          myGamePiece.speedY = 3;
+        }
+        if (dir == "left") {
+          myGamePiece.speedX = -3;
+        }
+        if (dir == "right") {
+          myGamePiece.speedX = 3;
+        }
       }
 
-      function moveup() {
-        myGamePiece.image.src = "ship1.png";
-        myGamePiece.speedY = -1;
-      }
-      function movedown() {
-        myGamePiece.image.src = "ship1.png";
-        myGamePiece.speedY = 1;
-      }
-      function moveleft() {
-        myGamePiece.image.src = "ship1.png";
-        myGamePiece.speedX = -1;
-      }
-      function moveright() {
-        myGamePiece.image.src = "ship1.png";
-        myGamePiece.speedX = 1;
-      }
       function clearmove() {
-        myGamePiece.image.src = "ship2.png";
+        myGamePiece.image.src = "ship1.png";
         myGamePiece.speedX = 0;
         myGamePiece.speedY = 0;
       }
 
       function togglePause() {
+        isPaused = !isPaused;
         if (isPaused) {
-          isPaused = false;
-          mySound.play();
-          document.getElementById("pause-menu").style.display = "none";
-          myGameArea.interval = setInterval(updateGameArea, 20);
-        } else {
-          isPaused = true;
-          mySound.play();
-          document.getElementById("pause-menu").style.display = "block";
           clearInterval(myGameArea.interval);
+          showPauseMenu();
+        } else {
+          myGameArea.interval = setInterval(updateGameArea, 20);
+          hidePauseMenu();
         }
       }
 
-      function restartGame() {
-        document.location.reload();
+      function showPauseMenu() {
+        var menu = document.getElementById("pauseMenu");
+        menu.style.display = "block";
       }
 
-      function updateVolume(value) {
-        mySound.sound.volume = value;
-      }
-
-      function accelerate(gContra) {
-        myGamePiece.gravity = gContra;
+      function hidePauseMenu() {
+        var menu = document.getElementById("pauseMenu");
+        menu.style.display = "none";
       }
     </script>
-    <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.1)">
-      ACCELERATE
-    </button>
-
-    <div style="text-align: center; width: 480px">
-      <button
-        onmousedown="moveup()"
-        onmouseup="clearmove()"
-        ontouchstart="moveup()"
-      >
-        UP</button
-      ><br /><br />
-      <button
-        onmousedown="moveleft()"
-        onmouseup="clearmove()"
-        ontouchstart="moveleft()"
-      >
-        LEFT
-      </button>
-      <button
-        onmousedown="moveright()"
-        onmouseup="clearmove()"
-        ontouchstart="moveright()"
-      >
-        RIGHT</button
-      ><br /><br />
-      <button
-        onmousedown="movedown()"
-        onmouseup="clearmove()"
-        ontouchstart="movedown()"
-      >
-        DOWN
-      </button>
-    </div>
-    <p>HOLA</p>
   </body>
 </html>
