@@ -85,19 +85,14 @@
       lives = 3, // Contador de vidas
       invulnerable = false; // Estado de invulnerabilidad
 
-    /*Inicio botones en canvas*/
     var myUpBtn;
-    var myDownBtn;
-    var myLeftBtn;
-    var myRightBtn;
-    /*Fin botones en canvas*/
 
     function startGame() {
-      myGamePiece = new component(40, 40, "img/ship1.png", 10, 120, "image");
+      myGamePiece = new component(50, 50, "img/ship2.png", 100, 50, "image");
       myBackground = new component(
         window.innerWidth,
         window.innerHeight - 100,
-        "img/astro_movie.jpg",
+        "img/ini2.jpeg",
         0,
         0,
         "background"
@@ -107,10 +102,7 @@
       myLives = new component("30px", "Consolas", "white", 20, 40, "text"); // Mostrar vidas
       mySound.play();
       /*Inicio botones en canvas*/
-      myUpBtn = new botonDisplay(40, 40, "cyan", 430, 220);
-      myDownBtn = new botonDisplay(0, 0, "blue", 50, 70);
-      myLeftBtn = new botonDisplay(0, 0, "blue", 20, 40);
-      myRightBtn = new botonDisplay(0, 0, "blue", 80, 40);
+      myUpBtn = new botonDisplay(40, 40, "red", 500, 290);
       /*Fin botones en canvas*/
       myGameArea.start();
       document.addEventListener("keydown", function (event) {
@@ -124,7 +116,7 @@
       canvas: document.createElement("canvas"),
       start: function () {
         this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight - 100;
+        this.canvas.height = 550;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
@@ -297,11 +289,7 @@
         var mybottom = this.y + this.height;
         var clicked = true;
         if (mybottom < myGameArea.y || mytop > myGameArea.y) {
-          /* myGamePiece.gravity = myGamePiece.gravity + 0.001; */
-          /* myGamePiece.gravitySpeed = 0; */
-
           clicked = false;
-
           console.log("FASEEEEEE.....");
         }
         console.log("myGamePiece.gravity: " + myGamePiece.gravity);
@@ -317,24 +305,23 @@
       for (i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
           if (invulnerable) {
-            // Si es invulnerable, el obstáculo desaparece temporalmente
-            myObstacles[i].x = myGameArea.canvas.width + 100; // Mover fuera del área visible
+            myObstacles[i].x = myGameArea.canvas.width + 100;
             setTimeout(
               function (obstacle) {
-                obstacle.x = -Math.random() * myGameArea.canvas.width; // Reaparecer en una posición aleatoria
+                obstacle.x = -Math.random() * myGameArea.canvas.width;
               },
               2000,
               myObstacles[i]
             );
           } else {
-            lives--; // Reducir vida
+            lives--;
             if (lives <= 0) {
               myGameArea.stop();
               return;
             } else {
               invulnerable = true;
               setTimeout(function () {
-                invulnerable = false; // Desactivar invulnerabilidad después de 3 segundos
+                invulnerable = false;
               }, 1000);
             }
           }
@@ -343,12 +330,8 @@
       myGameArea.clear();
       if (myGameArea.y) {
         if (myUpBtn.clicked()) {
-          /* accelerate(-0.2); */
-          /* myGamePiece.y -= 1; */
-
-          /* myGamePiece.gravity = myGamePiece.gravity + 0.001; */
-          /* myGamePiece.gravitySpeed = 0; */
           myGamePiece.gravity = -0.2;
+          myGamePiece.image.src = "img/ship1.png";
           console.log(
             "----------------Se está ejecutando el boton en pantalla: " +
             myGamePiece.y
@@ -357,36 +340,17 @@
           console.log(
             "******************Se está ejecutando el boton en pantalla: "
           );
-
-          /* myGamePiece.gravitySpeed = 0; */
-        }
-
-        if (myDownBtn.clicked()) {
-          myGamePiece.y += 1;
-        }
-        if (myLeftBtn.clicked()) {
-          myGamePiece.x += -1;
-        }
-        if (myRightBtn.clicked()) {
-          myGamePiece.x += 1;
         }
       } else {
-        /* myGamePiece.gravity = 0.05; */
         myGamePiece.gravity = 0.05;
         clearmove();
       }
-      myUpBtn.update();
-      myDownBtn.update();
-      myLeftBtn.update();
-      myRightBtn.update();
-      /* myGamePiece.update(); */
-      /*Fin Botones en canvas*/
 
       myBackground.newPos();
       myBackground.update();
       myGameArea.frameNo += 1;
       if (myGameArea.frameNo == 1 || everyinterval(150)) {
-        x = myGameArea.canvas.width;
+        x = myGameArea.canvas.width - 850;
         y = myGameArea.canvas.height - 200;
         minHeight = 20;
         maxHeight = 200;
@@ -408,7 +372,7 @@
 
       myScore.text = "SCORE: " + myGameArea.frameNo;
       myScore.update();
-      myLives.text = "LIVES: " + lives;
+      myLives.text = "VIDAS: " + lives;
       myLives.update(); // Actualizar visualización de vidas
       myGamePiece.newPos();
       myGamePiece.update();
@@ -429,23 +393,6 @@
       scores.sort((a, b) => b - a);
       scores = scores.slice(0, 10);
       localStorage.setItem("highScores", JSON.stringify(scores));
-    }
-
-    function moveup() {
-      myGamePiece.image.src = "img/ship1.png";
-      myGamePiece.speedY = -1;
-    }
-    function movedown() {
-      myGamePiece.image.src = "img/ship1.png";
-      myGamePiece.speedY = 1;
-    }
-    function moveleft() {
-      myGamePiece.image.src = "img/ship1.png";
-      myGamePiece.speedX = -1;
-    }
-    function moveright() {
-      myGamePiece.image.src = "img/ship1.png";
-      myGamePiece.speedX = 1;
     }
     function clearmove() {
       myGamePiece.image.src = "img/ship2.png";
@@ -476,26 +423,10 @@
     }
 
     function accelerate(gContra) {
+      myGamePiece.image.src = "img/ship1.png";
       myGamePiece.gravity = gContra;
     }
   </script>
-  <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.1)">
-    ACCELERATE
-  </button>
-
-  <div style="text-align: center; width: 480px">
-    <button onmousedown="moveup()" onmouseup="clearmove()" ontouchstart="moveup()">
-      UP</button><br /><br />
-    <button onmousedown="moveleft()" onmouseup="clearmove()" ontouchstart="moveleft()">
-      LEFT
-    </button>
-    <button onmousedown="moveright()" onmouseup="clearmove()" ontouchstart="moveright()">
-      RIGHT</button><br /><br />
-    <button onmousedown="movedown()" onmouseup="clearmove()" ontouchstart="movedown()">
-      DOWN
-    </button>
-  </div>
-  <p>HOLA</p>
 </body>
 
 </html>
