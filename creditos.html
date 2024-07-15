@@ -29,7 +29,7 @@
   <body onload="initCredits()">
     <canvas id="backgroundCanvas"></canvas>
     <div class="btn-container">
-      <button onclick="window.location.href='test.html'">Jugar de Nuevo</button>
+      <button onclick="window.location.href='juego.html'">Jugar de Nuevo</button>
       <button onclick="window.location.href='scores.html'" style="left: 10px;">Volver a Puntajes</button>
     </div>
     <script>
@@ -40,78 +40,35 @@
         canvas.width = window.innerWidth - 5;
         canvas.height = window.innerHeight - 100;
         ctx = canvas.getContext("2d");
-        myBackground = new component(canvas.width, canvas.height, "/astro_movie.jpg", 0, 0, "background");
-        mySound = new sound("dorado.mp3");
+
+        // Ajuste: Cargar la imagen de fondo directamente
+        var backgroundImage = new Image();
+        backgroundImage.src = "img/image.png"; // Asegúrate de que la ruta es correcta
+        backgroundImage.onload = function() {
+          ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+          displayCredits(); // Llama a displayCredits después de que la imagen se haya cargado y dibujado
+        };
+
+        mySound = new sound("sound/dorado.mp3");
         mySound.play();
-        myBackground.image.onload = function() {
-          myBackground.update();
-          displayCredits();
-        }
       }
 
       function displayCredits() {
-        ctx.fillStyle = "black";
-        ctx.font = "20px Consolas";
-        ctx.textAlign = "center";
-        ctx.fillText("Desarrolladores", canvas.width / 2, 50);
-        ctx.fillText("Dennisse Andrade", canvas.width / 2, 105);
-        ctx.fillText("Daniel Lumiquinga", canvas.width / 2, 150);
-        ctx.fillText("Anddy Quisilema", canvas.width / 2, 205);
-        ctx.fillText("Felipe Ramos", canvas.width / 2, 250);
-        ctx.fillText("Cristina Rivera", canvas.width / 2, 300);
+  // Asegúrate de que esta función se llama después de que la imagen de fondo se haya cargado
+  ctx.fillStyle = "red";
+  ctx.font = "20px Consolas";
+  ctx.textAlign = "center";
+  ctx.fillText("Desarrolladores", canvas.width / 2, 50);
 
-        ctx.fillText("V 1.1", canvas.width / 2, 350);
+  // Agregar nuevos textos
+  ctx.fillText("Anddy Quisilema", canvas.width / 2, 80); // Ajusta la posición Y según sea necesario
+  ctx.fillText("John Ramos", canvas.width / 2, 110); // Ajusta la posición Y según sea necesario
+  ctx.fillText("Cristina Rivera", canvas.width / 2, 140); // Ajusta la posición Y según sea necesario
 
-        ctx.fillText("2024", canvas.width / 2, 390);
+  // Resto de los créditos...
+}
 
-
-        ctx.fillText("Gracias por jugar!", canvas.width / 2, 430);
-      }
-
-      function sound(src) {
-        this.sound = document.createElement("audio");
-        this.sound.src = src;
-        this.sound.setAttribute("preload", "auto");
-        this.sound.setAttribute("controls", "none");
-        this.sound.style.display = "none";
-        document.body.appendChild(this.sound);
-        this.play = function () {
-          this.sound.play();
-        };
-        this.stop = function () {
-          this.sound.pause();
-        };
-      }
-
-      function component(width, height, color, x, y, type) {
-        this.type = type;
-        if (type == "image" || type == "background") {
-          this.image = new Image();
-          this.image.src = color;
-        }
-        this.width = width;
-        this.height = height;
-        this.x = x;
-        this.y = y;
-        this.update = function () {
-          if (type == "image" || type == "background") {
-            if (type == "background") {
-              ctx.globalAlpha = 0.5; // transparencia
-              ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-              ctx.globalAlpha = 1;
-            } else {
-              ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-            }
-          } else if (this.type == "text") {
-            ctx.font = this.width + " " + this.height;
-            ctx.fillStyle = color;
-            ctx.fillText(this.text, this.x, this.y);
-          } else {
-            ctx.fillStyle = color;
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-          }
-        };
-      }
+      // Resto de las funciones (sound y component)...
     </script>
   </body>
 </html>
